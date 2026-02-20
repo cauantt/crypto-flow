@@ -33,7 +33,7 @@ it("deve retornar error se a subtraçao der número negativo", ()=>{
 
    
 
-    expect(()=> saldo.subtract(saque)).toThrow("O valor não pode ser negativo");
+    expect(()=> saldo.subtract(saque)).toThrow("O valor não pode ser negativo.");
 
 });
 
