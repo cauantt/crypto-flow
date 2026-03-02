@@ -2,15 +2,16 @@ import { Inject, Injectable } from "@nestjs/common";
 import { Wallet } from "src/domain/entities/wallet.entity";
 import { IWalletRepository } from "src/domain/repositories/wallet.repository.interface";
 import { Money } from "src/domain/value-objects/money.value-object";
-import { Repository } from "typeorm";
+import { EntityManager, Repository } from "typeorm";
 import { WalletTypeOrmEntity } from "../database/entities/wallet.typeorm-entity";
+import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class WalletRepository implements IWalletRepository {
 
     constructor(
 
-        @Inject(Repository<Wallet>)
+        @InjectRepository(WalletTypeOrmEntity)
         private readonly repository : Repository<WalletTypeOrmEntity>
     ){}
 
@@ -47,5 +48,30 @@ export class WalletRepository implements IWalletRepository {
 
     
     }
+
+    async saveMultiple(wallets: Wallet[]): Promise<void> {
+        
+        await this.repository.manager.transaction(async (transactionalEntityManager: EntityManager)=>{
+
+            for(const wallet of wallets){
+
+                const dbWallet = transactionalEntityManager.create(WalletTypeOrmEntity,{
+                    id: wallet.id,
+                    userId: wallet.userId,
+                    balanceCents: wallet.balance.amount,
+
+                });
+
+                await transactionalEntityManager.save(dbWallet);
+            }
+
+
+
+
+        });
+
+    }
+
+
 
 }

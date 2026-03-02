@@ -23,8 +23,8 @@ export class TransferFundsUseCase {
         toWallet.deposit(amountTransfer);
         fromWallet.withdraw(amountTransfer);
 
-        await this.repository.save(toWallet);
-        await this.repository.save(fromWallet);
+        await this.repository.saveMultiple([fromWallet,toWallet]);
+       
 
 
 
